@@ -39,7 +39,7 @@ def brute_force(input_set: list[int]) -> list[list[list[int]], int]:
 
     This algorithm is an example of a brute force because:
      - it generate all possible permutations using a ternary system (each int can be in 1 of the 3 subsets)
-     - compare each permutation to see if it's the best currently
+     - compare each permutation to see if it's the best (lowest difference) currently
 
     """
 
