@@ -67,13 +67,11 @@ def greedy_value_to_weight(items: list[Item], weight_limit: int) -> None:
 
 def main():
 
-    print(f'Len of args: {len(sys.argv)}')
-    print(sys.argv)
+    # print(sys.argv)
     
     if len(sys.argv) != 5:
-        print('Invalid Args Count')
+        print(f'Invalid Args Count: {len(sys.argv)} (Needs 5)')
         exit()
-
 
     max_items = int(sys.argv[1])
     weight_limit = int(sys.argv[2])
