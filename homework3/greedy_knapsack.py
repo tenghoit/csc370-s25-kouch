@@ -13,9 +13,19 @@ class Item:
 
 def print_items(items: list[Item], result: list[Item]) -> None:
 
+    binary_str = ''
+    total_weight = 0
+    total_value = 0
+
     for item in items:
         if item in result:
-            print(f'{item.item_name}\n{item.item_weight}\n{item.item_value}')
+            binary_str += '1'
+            total_weight += item.item_weight
+            total_value += item.item_value
+        else:
+            binary_str += '0'
+
+    print(f'{binary_str}\n{total_weight}\n{total_value}')
 
 
 def greedy_value(items: list[Item], weight_limit: int) -> None:
@@ -67,16 +77,19 @@ def greedy_value_to_weight(items: list[Item], weight_limit: int) -> None:
 
 def main():
 
-    # print(sys.argv)
-    
     if len(sys.argv) != 5:
         print(f'Invalid Args Count: {len(sys.argv)} (Needs 5)')
+        print(sys.argv)
         exit()
 
     max_items = int(sys.argv[1])
+    # print(max_items)
     weight_limit = int(sys.argv[2])
+    # print(weight_limit)
     heuristic_name = sys.argv[3]
+    # print(heuristic_name)
     input_file_name = sys.argv[4]
+    # print(input_file_name)
 
     # print(max_items, weight_limit, heuristic_name, input_file_name)
 
@@ -107,5 +120,5 @@ def main():
         greedy_value_to_weight(items, weight_limit)
 
 
-
-main()
+if __name__ == '__main__':
+    main()
