@@ -1,11 +1,9 @@
 # “branch_and_bound_framework.py”
 from __future__ import annotations
-from abc import abstractmethod, ABC
 from bisect import insort
 from copy import copy
 import csv
-
-
+import sys
 
 
 
@@ -15,6 +13,11 @@ class Node:
         self.tour = tour
         if self.tour is None:
             self.tour = [0]
+
+        if len(self.tour) == len(self.distance_matrix) - 1:
+            remaining_city = [city for city in range(len(self.distance_matrix)) if city not in self.tour]
+            self.tour.append(remaining_city[0])
+            
 
     
     def get_children(self) -> list[Node]:
@@ -29,7 +32,7 @@ class Node:
 
     def get_value(self):
 
-        if len(self.tour) != len(self.distance_matrix): return float('-inf') # not complete
+        if len(self.tour) != len(self.distance_matrix): return float('inf') # not complete
 
         total_cost = 0
         for i in range(len(self.tour) - 1):
@@ -51,6 +54,7 @@ class Node:
 
         lower_bound = 0
         remaining_cities = [city for city in range(len(self.distance_matrix)) if city not in self.tour]
+        # print(f'    remaining cites: {remaining_cities}')
 
         for city in remaining_cities:
             path_cost = float('inf')
@@ -71,11 +75,13 @@ class Node:
 
     
     def has_better_value(self, other: Node) -> bool:
-        current_value = self.get_value()
-        if current_value == float('inf'): 
-            return False
-        else:
-            return current_value < other.get_value()
+        if len(self.tour) != len(self.distance_matrix):
+            return False  # Not a complete tour, can't be better
+
+        if len(other.tour) != len(other.distance_matrix):
+            return True  # Complete tour always beats incomplete
+
+        return self.get_value() < other.get_value()
 
 
     def might_be_better_than(self, other: Node) -> bool:
@@ -137,21 +143,30 @@ class BranchAndBoundSolver:
         best_node = Q[0]
 
         while Q:
-            print(f'Len of Q: {len(Q)}')
-            most_promising = Q.pop()
+            # print(f'Best: {best_node}')
+            # print(f'Len of Q: {len(Q)}')
+            most_promising = Q.pop(0)
             for child in most_promising.get_children():
+                # print(child)
                 if child.has_better_value(best_node):
                     best_node = child
-
+                # If no complete solution yet, track the most promising one (by bound)
+                elif best_node is None or len(best_node.tour) != len(self.distance_matrix):
+                    if child.might_be_better_than(best_node):
+                        best_node = child
+                
                 if child.might_be_better_than(best_node):
+                    # print(f'    might be better than')
                     insort(Q, child) # uses __lt__ to sort
 
-        return best_node
+        named_tour = [self.cities[i] for i in best_node.tour]
+        return f'{best_node.get_value()}\n{','.join(named_tour)}'
 
 
 def main():
-    solver = BranchAndBoundSolver('test.csv')
-    print(solver)
+    file_path = sys.argv[1]
+    solver = BranchAndBoundSolver(file_path)
+    # print(solver)
     result = solver.find_solution()
     print(result)
 
