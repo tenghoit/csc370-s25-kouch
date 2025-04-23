@@ -1,0 +1,5 @@
+city name,Toronto,Seattle,Santa Fe,Cleveland
+Toronto,0,4147,2862,469
+Seattle,4147,0,2325,3834
+Santa Fe,2862,2325,0,2544
+Cleveland,469,3834,2544,0
