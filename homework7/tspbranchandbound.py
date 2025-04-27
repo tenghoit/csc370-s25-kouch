@@ -1,10 +1,7 @@
-# “branch_and_bound_framework.py”
 from __future__ import annotations
 from bisect import insort
-from copy import copy
 import csv
 import sys
-
 
 
 class Node:
@@ -128,7 +125,6 @@ class BranchAndBoundSolver:
             rows = list(reader)
 
         self.cities = rows[0][1:]  # reading city names
-        self.distance_matrix = []
 
         for row in rows[1:]:
             distances = list(map(int, row[1:]))  # skip name column
@@ -143,32 +139,40 @@ class BranchAndBoundSolver:
         best_node = Q[0]
 
         while Q:
+            
             # print(f'Best: {best_node}')
             # print(f'Len of Q: {len(Q)}')
+
             most_promising = Q.pop(0)
             for child in most_promising.get_children():
                 # print(child)
                 if child.has_better_value(best_node):
                     best_node = child
+
                 # If no complete solution yet, track the most promising one (by bound)
                 elif best_node is None or len(best_node.tour) != len(self.distance_matrix):
                     if child.might_be_better_than(best_node):
                         best_node = child
                 
-                if child.might_be_better_than(best_node):
-                    # print(f'    might be better than')
+                if child.might_be_better_than(best_node) or best_node.get_value() == float('inf'):
                     insort(Q, child) # uses __lt__ to sort
 
+        print(best_node.get_value())
         named_tour = [self.cities[i] for i in best_node.tour]
-        return f'{best_node.get_value()}\n{','.join(named_tour)}'
+        print(','.join(named_tour))
+        # return f'{best_node.get_value()}\n{','.join(named_tour)}'
 
 
 def main():
     file_path = sys.argv[1]
     solver = BranchAndBoundSolver(file_path)
     # print(solver)
-    result = solver.find_solution()
-    print(result)
+    # result = solver.find_solution()
+    # print(result.strip())
+
+    solver.find_solution()
+
+
 
 if __name__ == '__main__':
     main()
